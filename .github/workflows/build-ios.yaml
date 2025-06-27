@@ -17,18 +17,26 @@ jobs:
           channel: stable
           flutter-version: 3.32.x
 
-      - name: "Install Dependencies"
+      - name: "Flutter Get"
         run: flutter pub get
 
-      - name: "Generated Code"
+      - name: "Dart Codegen"
         run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: "Build IPA"
+      - name: "Flutter Build"
         run: flutter build ipa --no-codesign
+
+      - name: "Xcode Export"
+        run: |
+          xcodebuild -exportArchive \
+            -archivePath build/ios/archive/Runner.xcarchive \
+            -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/ios/ipa
 
       - name: "Debug"
         continue-on-error: true
         run: |
+          ls -lAh build/ios/
           ls -lAh build/ios/ipa/
 
       - name: "Upload to Actions"
