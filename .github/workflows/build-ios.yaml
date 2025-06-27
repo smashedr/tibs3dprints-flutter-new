@@ -42,12 +42,15 @@ jobs:
         continue-on-error: true
         run: |
           plutil -p build/ios/archive/Runner.xcarchive/Info.plist || cat build/ios/archive/Runner.xcarchive/Info.plist
+          echo "----------"
+          plutil -p build/ios/archive/Runner.xcarchive/Info.plist | grep Team
 
       - name: "Xcode Export"
         run: |
+          cp ExportOptions.plist build/ios/archive/
           xcodebuild -exportArchive \
             -archivePath build/ios/archive/Runner.xcarchive \
-            -exportOptionsPlist ExportOptions.plist \
+            -exportOptionsPlist build/ios/archive/ExportOptions.plist \
             -exportPath build/ios/ipa
 
       - name: "Debug 2"
