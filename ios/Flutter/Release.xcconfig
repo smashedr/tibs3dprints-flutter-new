@@ -1,1 +1,4 @@
 #include "Generated.xcconfig"
+
+CODE_SIGN_STYLE = Manual
+DEVELOPMENT_TEAM = ZY6BPTGK47
