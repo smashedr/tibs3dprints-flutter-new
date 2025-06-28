@@ -11,28 +11,55 @@ jobs:
       - name: "Checkout"
         uses: actions/checkout@v4
 
+      - name: "Debug Event"
+        continue-on-error: true
+        run: |
+          echo "pwd: $(pwd)"
+          echo "--------------------"
+          ls .
+          echo "--------------------"
+
+          echo "::group::cat event.json"
+          cat "${GITHUB_EVENT_PATH}"
+          echo "::endgroup::"
+
       - name: "Setup Flutter"
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           flutter-version: 3.32.x
 
-      - name: "Install Dependencies"
+      - name: "Flutter Get"
         run: flutter pub get
 
-      - name: "Generated Code"
+      - name: "Dart Codegen"
         run: dart run build_runner build --delete-conflicting-outputs
 
-      - name: "Build IPA"
+      - name: "Flutter Build"
         run: flutter build ipa --no-codesign
 
-      - name: "Debug"
+      #- name: "Debug 1"
+      #  continue-on-error: true
+      #  run: |
+      #    plutil -p build/ios/archive/Runner.xcarchive/Info.plist
+
+      #- name: "Xcode Export"
+      #  run: |
+      #    cp ExportOptions.plist build/ios/archive/
+      #    xcodebuild -exportArchive \
+      #      -archivePath build/ios/archive/Runner.xcarchive \
+      #      -exportOptionsPlist build/ios/archive/ExportOptions.plist \
+      #      -exportPath build/ios/ipa
+
+      - name: "Debug 2"
         continue-on-error: true
         run: |
-          ls -lAh build/ios/ipa/
+          ls -lAh build/ios/ipa/ ||:
+          ls -lAh build/ios/archive/ ||:
 
       - name: "Upload to Actions"
         uses: actions/upload-artifact@v4
         with:
-          name: unsigned-ipa
-          path: build/ios/ipa/*.ipa
+          name: build-ios
+          #path: build/ios/ipa/*.ipa
+          path: build/ios/archive/*.xcarchive
